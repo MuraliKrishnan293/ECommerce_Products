@@ -1,0 +1,53 @@
+.landing {
+  background-image: url("./components//images/fourk.jpg");
+  background-size: cover;
+  background-position: center;
+}
+
+body {
+  background-image: url("../src//components//images/paper.avif");
+}
+
+.lform {
+  border: 5px solid greenyellow;
+  background: linear-gradient(to right, #ff6b6b, yellow);
+}
+
+.logs {
+  background-image: url("./components/images/login.avif");
+  background-size: cover;
+  background-position: center;
+  min-height: 100vh;
+}
+
+.userc {
+  min-height: 100vh;
+  background-image: url("../src/components/images/userdetails.avif");
+  background-size: cover;
+  background-position: center;
+}
+
+.userdata {
+  border: 2px solid yellow;
+  border-radius: 10px;
+}
+
+.alltypeimages {
+  background: linear-gradient(to right, purple, violet, lightblue, lightpink);
+}
+
+.same {
+  background-size: cover;
+  background-position: center;
+}
+
+@media screen and (max-width: 770px) {
+  .cat {
+    height: fit-content;
+    /* display: none; */
+  }
+}
+
+.cat {
+  height: fit-content;
+}
