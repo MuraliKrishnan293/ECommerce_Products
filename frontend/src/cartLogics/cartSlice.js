@@ -1,42 +1,72 @@
-import { createSlice } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
+import axios from 'axios';
 
-const id = localStorage.getItem("id");
+export const fetchCartItems = createAsyncThunk(
+  'cart/fetchCartItems',
+  async () => {
+    try {
+      const authToken = localStorage.getItem('authToken');
+      const response = await axios.get('http://localhost:5000/app/getcart', {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      // const size =  response.data.cart.length;
+      // console.log(size)
+      return response.data.cart;
+    } catch (error) {
+      // return rejectWithValue(error.response.data);
+      console.log(error);
+    }
+  }
+);
 
-const initialState = [];
+export const removeCart =  createAsyncThunk(
+  'cart/removeCart',
+  async(id)=>{
+    try {
+      const authToken = localStorage.getItem('authToken');
+      const response = await axios.delete(`http://localhost:5000/app/removeFromCart/${id}`, {
+        headers: {
+          Authorization: `Bearer ${authToken}`,
+        },
+      });
+      return response.data.cart;
+    } catch (error) {
+      console.log(error);
+    }
+  }
+);
 
-export const cartSlice = createSlice({
-  name: "cart",
-  initialState: initialState,
-  reducers: {
-    addToCart(state, action) {
-      const existIndex = state.findIndex(
-        (item) => item.id === action.payload.id
-      );
-      if (existIndex !== -1) {
-        //if the product already exists in the cart we just increase its quantity by one
-        state[existIndex].count++;
-      } else {
-        //if the product is not in the cart we add it to the cart
-        state.push({ ...action.payload, count: 1 });
-      }
-    //   localStorage.setItem(`cartItems_${id}`, JSON.stringify(state));
-      //   state.isLoading=false;
-      //   return state;
-    }, 
-    removeFromCart(state, action) {
-        // Remove from cart logic
-        const updatedCartItems = state.filter(
-            (item) => item.id !== action.payload
-        );
-    
-        // Update localStorage after removing item
-        // localStorage.setItem("cartItems", JSON.stringify(updatedCartItems));
-    
-        // Return the updated state
-        return updatedCartItems;
-    },
+const cartSlice = createSlice({
+  name: 'cart',
+  initialState: {
+    items: [],
+    status: 'idle',
+    error: null,
+    // size: null
+  },
+  extraReducers: (builder) => {
+    builder
+      .addCase(fetchCartItems.pending, (state) => {
+        state.status = 'loading';
+      })
+      .addCase(fetchCartItems.fulfilled, (state, action) => {
+        state.status = 'succeeded';
+        // state.size = action.payload.length;
+        state.items = action.payload;
+      })
+      .addCase(fetchCartItems.rejected, (state, action) => {
+        state.status = 'failed';
+        state.error = action.payload;
+      })
+      .addCase(removeCart.fulfilled,(state,action)=>{
+        // state.items = state.items.filter(item => item.id !== action.payload.id);
+        state.items = action.payload;
+        // state.size = state.items.length;
+      })
   },
 });
 
-export const { addToCart, removeFromCart } = cartSlice.actions;
 export default cartSlice.reducer;
+
